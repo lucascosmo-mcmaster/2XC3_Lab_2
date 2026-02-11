@@ -43,6 +43,22 @@ def BFS(G, node1, node2):
                 marked[node] = True
     return False
 
+def BFS2(G, node1, node2):
+    Q = deque([node1])
+    path = {node1 : node1} 
+    for node in G.adj: 
+        if node != node1:
+            path[node] = None
+    while len(Q) != 0: 
+        current_node = Q.popleft()
+        for node in G.adj[current_node]: 
+            if path[node] == None: 
+                Q.append(node) 
+                path[node] = current_node 
+                if node == node2: 
+                    return path
+    return {}
+
 
 #Depth First Search
 def DFS(G, node1, node2):
