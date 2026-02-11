@@ -85,7 +85,7 @@ def DFS(G, node1, node2):
                 S.append(node)
     return False
 
-def DFS2(G, node1, node2):
+def DFS2 (G, node1, node2):
     S = [node1]
     marked = {}
     path = {node1 : node1}
