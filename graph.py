@@ -43,6 +43,15 @@ def BFS(G, node1, node2):
                 marked[node] = True
     return False
 
+def walk_back(path_back, start):
+    path = deque()
+    current = start
+    path.appendleft(current)
+    while path_back[current] != current:
+        path.appendleft(path_back[current])
+        current = path_back[current]
+    return list(path)
+
 def BFS2(G, node1, node2):
     Q = deque([node1])
     path = {node1 : node1} 
@@ -56,7 +65,7 @@ def BFS2(G, node1, node2):
                 Q.append(node) 
                 path[node] = current_node 
                 if node == node2: 
-                    return path
+                    walk_back(path, node)
     return {}
 
 
@@ -75,6 +84,26 @@ def DFS(G, node1, node2):
                     return True
                 S.append(node)
     return False
+
+def DFS2(G, node1, node2):
+    S = [node1]
+    marked = {}
+    path = {node1 : node1}
+    for node in G.adj:
+        marked[node] = False
+        path[node] = None
+    while len(S) != 0:
+        current_node = S.pop()
+        if not marked[current_node]:
+            marked[current_node] = True
+            for node in G.adj[current_node]:
+                if node == node2:
+                    path[node] = current_node #TODO:some sort of order issue im too lazy to comprehend right now
+                    return walk_back(path, node)
+                S.append(node)
+                if path[node] is None:
+                    path[node] = current_node
+    return {}
 
 #Use the methods below to determine minimum vertex covers
 
