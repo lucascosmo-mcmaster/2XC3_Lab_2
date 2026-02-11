@@ -61,3 +61,35 @@ def approx2(G):
         C.add(v) #add the random vertex to the vertex cover
     
     return C
+    
+
+def approx3(G):
+    C = set() #start with empty set to store the vertex cover
+    adj_cp = {} #create an empty copy of the adjacency list to modify
+    copy_adj(G, adj_cp) #copy the adjacency list into adj_cp
+
+    #while there are still edges in the graph
+    while has_edges(adj_cp):
+        edges = [] #list of edges not in the vertex cover
+        u = None #first vertex of the selected edge
+        v = None #second vertex of the selected edge
+
+        for (u, v) in adj_cp.items():
+            for neighbor in v:
+                edges.append((u, neighbor))
+        
+        (u, v) = random.choice(edges) #choose a random edge from the list of edges not in the vertex cover
+        C.add(u) #add the first vertex of the random edge to the vertex cover
+        C.add(v) #add the second vertex of the random edge to the vertex cover
+
+        #remove all edges incident to the first vertex of the random edge
+        for neighbor in adj_cp[u]: 
+            adj_cp[neighbor].remove(u)
+        adj_cp[u] = []
+
+        #remove all edges incident to the second vertex of the random edge
+        for neighbor in adj_cp[v]: 
+            adj_cp[neighbor].remove(v)
+        adj_cp[v] = []
+        
+    return C
