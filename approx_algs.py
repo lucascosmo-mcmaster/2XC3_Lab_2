@@ -16,6 +16,13 @@ def has_edges(adj):
     return False
 
 
+#helper function to remove all edges incident to a vertex
+def remove_edges(adj_cp, v):
+    for u in adj_cp[v]:
+        adj_cp[u].remove(v)
+    adj_cp[v] = []
+
+
 def approx1(G): 
     C = set() #start with empty set to store the vertex cover
     adj_cp = {} #create an empty copy of the adjacency list to modify
@@ -37,9 +44,7 @@ def approx1(G):
         C.add(v)
 
         #remove all edges incident to the vertex with the highest degree
-        for u in adj_cp[v]:
-            adj_cp[u].remove(v)
-        adj_cp[v] = []
+        remove_edges(adj_cp, v)
     
     return C
 
@@ -59,6 +64,9 @@ def approx2(G):
         
         v = random.choice(vertices) #choose a random vertex from the list of vertices not in the vertex cover
         C.add(v) #add the random vertex to the vertex cover
+
+        #remove all edges incident to the random vertex
+        remove_edges(adj_cp, v)
     
     return C
     
@@ -82,14 +90,10 @@ def approx3(G):
         C.add(u) #add the first vertex of the random edge to the vertex cover
         C.add(v) #add the second vertex of the random edge to the vertex cover
 
-        #remove all edges incident to the first vertex of the random edge
-        for neighbor in adj_cp[u]: 
-            adj_cp[neighbor].remove(u)
-        adj_cp[u] = []
-
-        #remove all edges incident to the second vertex of the random edge
-        for neighbor in adj_cp[v]: 
-            adj_cp[neighbor].remove(v)
-        adj_cp[v] = []
+        #remove all edges incident to the vertices of the random edge
+        for u in adj_cp:
+            for v in adj_cp[u]:
+                if u < v:
+                    edges.append((u, v))
         
     return C
