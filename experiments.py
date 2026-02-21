@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from graph import create_random_graph, has_cycle
 
 
-#experiment for number of edges vs. graph probability
+#experiment for number of edges vs. cycle probability
 def cycle_experiment(n, max_edges, trials):
     num_edges = [] #list to store each tested number of edges
     prob = [] #list to store the probability of a cycle for each number of edges
