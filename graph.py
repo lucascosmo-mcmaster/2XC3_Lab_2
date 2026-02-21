@@ -1,4 +1,5 @@
 from collections import deque
+import random
 
 #Undirected graph using an adjacency list
 class Graph:
@@ -201,6 +202,27 @@ def is_connected(G):
             if not BFS(G, node1, node2):
                 return False
     return True
+
+
+#creates a random graph for experiements
+def create_random_graph(i, j):
+    G = Graph()
+    edges = set()
+
+    for node in range(i): #create i nodes
+        G.adj[node] = []
+    
+    while len(edges) < j: #randomly generate j edges
+        u = random.randint(0, i - 1)
+        v = random.randint(0, i - 1)
+    
+    if u != v: #only add an edge if u and v are different nodes
+        edge = tuple(sorted((u, v)))
+        if edge not in edges: #only add an edge if that edge does not already exist
+            edges.add(edge)
+            G.adj[u].append(v)
+            G.adj[v].append(u)
+    return G
 
 
 #Use the methods below to determine minimum vertex covers
