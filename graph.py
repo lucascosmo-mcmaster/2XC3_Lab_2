@@ -206,7 +206,7 @@ def is_connected(G):
 
 #creates a random graph for experiements
 def create_random_graph(i, j):
-    G = Graph()
+    G = Graph(i)
     edges = set()
 
     for node in range(i): #create i nodes
@@ -216,12 +216,12 @@ def create_random_graph(i, j):
         u = random.randint(0, i - 1)
         v = random.randint(0, i - 1)
     
-    if u != v: #only add an edge if u and v are different nodes
-        edge = tuple(sorted((u, v)))
-        if edge not in edges: #only add an edge if that edge does not already exist
-            edges.add(edge)
-            G.adj[u].append(v)
-            G.adj[v].append(u)
+        if u != v: #only add an edge if u and v are different nodes
+            edge = tuple(sorted((u, v)))
+            if edge not in edges: #only add an edge if that edge does not already exist
+                edges.add(edge)
+                G.adj[u].append(v)
+                G.adj[v].append(u)
     return G
 
 
