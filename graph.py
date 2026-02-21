@@ -82,6 +82,49 @@ def BFS2(G, node1, node2):
     return {}
 
 
+#Breadth First Search variant that returns the list of nodes in the path from node1 to node2
+def BFS2(G, node1, node2):
+    #base case where node1 and node2 are the same
+    if node1 == node2:
+        return [node1]
+    
+    Q = deque([node1]) #initialize queue with starting node
+    path = {} #dictionary to store each node's predecessor
+
+    #initialize all nodes as unvisited
+    for node in G.adj: 
+        if node != node1:
+            path[node] = None
+    
+    path[node1] = node1 #the path from node1 points to itself
+    
+    #perform BFS until all nodes have been visited
+    while len(Q) != 0: 
+        current_node = Q.popleft() #remove the next node from the queue
+        for node in G.adj[current_node]: #visit all neighbors of the current node
+            if path[node] == None: #if a neighbor hasn't been visited yet, add it to the queue
+                Q.append(node) 
+                path[node] = current_node #record the path
+                if node == node2: #if the target node is found, walk back to find the path again
+                    return walk_back(path, node)
+    return {}
+
+
+#Breadth First Search variant that encodes all path information in a predecessor dictionary
+def BFS3(G, node1):
+    Q = deque([node1]) #initialize queue with starting node
+    path = {} #dictionary to store each node's predecessor
+
+    #perform BFS until all nodes have been visited
+    while len(Q) != 0:
+        current_node = Q.popleft() #remove the next node from the queue
+        for node in G.adj[current_node]: #visit all neighbors of the current node
+            if path[node] == None: #if a neighbor hasn't been visited yet, add it to the queue
+                Q.append(node)
+                path[node] = current_node #record the path
+    return path
+
+
 #Depth First Search
 def DFS(G, node1, node2):
     S = [node1]
@@ -101,17 +144,19 @@ def DFS(G, node1, node2):
 
 #Depth First Search variant that returns the list of nodes in the path from node1 to node2
 def DFS2 (G, node1, node2):
+    #base case where node1 and node2 are the same
+    if node1 == node2:
+        return [node1]
+    
     S = [node1] #initialize stack with starting node
     marked = {} #dictionary to track which nodes have been visited
     path = {} #dictionary to store each node's predecessor
 
-    #initialize all nodes as unvisited/without a path
+    #initialize all nodes as unvisited
     for node in G.adj:
         marked[node] = False
-        path[node] = None
     
     marked[node1] = True #the starting node is marked
-    path[node1] = node1 #the path from node1 points to itself
 
 
     #perform DFS until all nodes have been visited
@@ -125,6 +170,29 @@ def DFS2 (G, node1, node2):
                 if node == node2: #if the target node is found, walk back to find the path again
                     return walk_back(path, node)
     return {}
+
+
+#Depth First Search variant that encodes all path information in a predecessor dictionary
+def DFS3(G, node1):
+    S = [node1] #initialize stack with starting node
+    marked = {} #dictionary to track which nodes have been visited
+    path = {} #dictionary to store each node's predecessor
+
+    #initialize all nodes as unvisited
+    for node in G.adj:
+        marked[node] = False
+    
+    marked[node1] = True #the starting node is marked
+
+    #perform DFS until all nodes have been visited
+    while len(S) != 0:
+        current_node = S.pop() #pop the current node from the stack
+        for node in G.adj[current_node]: #visit all neighbors of the current node
+            if not marked[node]: #if a node hasn't been marked yet, add it to the stack
+                S.append(node)
+                marked[node] = True #mark the node as visited
+                path[node] = current_node #record the path
+    return path
 
 
 #Use the methods below to determine minimum vertex covers
