@@ -82,34 +82,6 @@ def BFS2(G, node1, node2):
     return {}
 
 
-#Breadth First Search variant that returns the list of nodes in the path from node1 to node2
-def BFS2(G, node1, node2):
-    #base case where node1 and node2 are the same
-    if node1 == node2:
-        return [node1]
-    
-    Q = deque([node1]) #initialize queue with starting node
-    path = {} #dictionary to store each node's predecessor
-
-    #initialize all nodes as unvisited
-    for node in G.adj: 
-        if node != node1:
-            path[node] = None
-    
-    path[node1] = node1 #the path from node1 points to itself
-    
-    #perform BFS until all nodes have been visited
-    while len(Q) != 0: 
-        current_node = Q.popleft() #remove the next node from the queue
-        for node in G.adj[current_node]: #visit all neighbors of the current node
-            if path[node] == None: #if a neighbor hasn't been visited yet, add it to the queue
-                Q.append(node) 
-                path[node] = current_node #record the path
-                if node == node2: #if the target node is found, walk back to find the path again
-                    return walk_back(path, node)
-    return {}
-
-
 #Breadth First Search variant that encodes all path information in a predecessor dictionary
 def BFS3(G, node1):
     Q = deque([node1]) #initialize queue with starting node
@@ -193,6 +165,42 @@ def DFS3(G, node1):
                 marked[node] = True #mark the node as visited
                 path[node] = current_node #record the path
     return path
+
+
+#checks if a cycle exists in the graph G
+def has_cycle(G):
+    #iterate over all edges
+    for u in G.adj:
+        for v in G.adj[u]:
+            if u < v:
+                #temporarily remove the edge between u and v
+                G.adj[u].remove(v)
+                G.adj[v].remove(u)
+                #check if u and v are still connected
+                if DFS(G, v, u):
+                    #add back the edge between u and v
+                    G.adj[u].append(v)
+                    G.adj[v].append(u)
+                    return True
+                G.adj[u].append(v)
+                G.adj[v].append(u)
+    return False
+
+    
+#checks if all nodes are connected in the graph G
+def is_connected(G):
+    #base case where the graph has no nodes
+    if not G.adj:
+        return True
+
+    node1 = list(G.adj.keys())[0] #choose a starting node
+
+    #check that every other node is also reachable from the starting node
+    for node2 in G.adj:
+        if node2 != node1:
+            if not BFS(G, node1, node2):
+                return False
+    return True
 
 
 #Use the methods below to determine minimum vertex covers
