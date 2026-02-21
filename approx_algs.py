@@ -79,21 +79,15 @@ def approx3(G):
     #while there are still edges in the graph
     while has_edges(adj_cp):
         edges = [] #list of edges not in the vertex cover
-        u = None #first vertex of the selected edge
-        v = None #second vertex of the selected edge
 
-        for (u, v) in adj_cp.items():
-            for neighbor in v:
-                edges.append((u, neighbor))
+        for u, neighbors in adj_cp.items():
+            for v in neighbors:
+                edges.append((u, v))
         
-        (u, v) = random.choice(edges) #choose a random edge from the list of edges not in the vertex cover
+        u, v = random.choice(edges) #choose a random edge from the list of edges not in the vertex cover
         C.add(u) #add the first vertex of the random edge to the vertex cover
         C.add(v) #add the second vertex of the random edge to the vertex cover
-
-        #remove all edges incident to the vertices of the random edge
-        for u in adj_cp:
-            for v in adj_cp[u]:
-                if u < v:
-                    edges.append((u, v))
+        remove_edges(adj_cp, u)
+        remove_edges(adj_cp, v)
         
     return C
