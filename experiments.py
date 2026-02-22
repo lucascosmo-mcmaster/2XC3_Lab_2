@@ -1,4 +1,5 @@
-from graph import create_random_graph, has_cycle, is_connected
+from graph import create_random_graph, has_cycle, is_connected, MVC
+from approx_algs import approx1, approx2, approx3
 import matplotlib.pyplot as plt
 import csv
 
@@ -31,7 +32,7 @@ def connected_experiment(n, max_edges, trials):
     num_edges = [] #list to store each tested number of edges
     prob = [] #list to store the probability of a connected graph for each number of edges
 
-    for e in range(max_edges + 1):
+    for e in range(max_edges):
         num_connected = 0 #counts how many graphs are connected
 
         #generate a random graph with n nodes and e edges
@@ -49,14 +50,59 @@ def connected_experiment(n, max_edges, trials):
     return num_edges, prob
 
 
+#experiment to compare how close each approximation algorithm is to outputting the minimum vertex cover
+def approx_experiment1(n, max_edges, trials):
+    num_edges = list(range(1, max_edges, 5)) #list of edges from 1 to max_edges, stepping by 5
+    approx1_ratios = []
+    approx2_ratios = []
+    approx3_ratios = []
+
+    #loop over each number of edges to generate random graphs
+    for m in num_edges:
+        mvc_total = 0
+        a1_total = 0
+        a2_total = 0
+        a3_total = 0
+
+        for _ in range(trials):
+            G = create_random_graph(n, m)
+            mvc_size = len(MVC(G))
+            mvc_total += mvc_size
+
+            #run all three approximation algorithms multiple times and take the average
+            a1_total += sum(len(approx1(G)) for _ in range(5)) / 5
+            a2_total += sum(len(approx2(G)) for _ in range(5)) / 5
+            a3_total += sum(len(approx3(G)) for _ in range(5)) / 5
+
+        #compute the average ration of the approximation size to the MVC size
+        approx1_ratios.append(a1_total / mvc_total)
+        approx2_ratios.append(a2_total / mvc_total)
+        approx3_ratios.append(a3_total / mvc_total)
+
+    return num_edges, approx1_ratios, approx2_ratios, approx3_ratios
+
+
 #plots the graph of an experiment and saves it
-def plot_graph(n, max_edges, trials, filename, func):
-    e, p = func(n, max_edges, trials)
-    plt.plot(e, p)
+def plot_graph(n, max_edges, trials, filename, func, yla):
+    if func == approx_experiment1: 
+        e, p1, p2, p3 = func(n, max_edges, trials)
+        plt.plot(e, p1, label="approx1")
+        plt.plot(e, p2, label="approx2")
+        plt.plot(e, p3, label="approx3")
+        save_results(e, p1, filename + "_approx1")
+        save_results(e, p2, filename + "_approx2")
+        save_results(e, p3, filename + "_approx3")
+        plt.legend()
+
+
+    else:
+        e, p = func(n, max_edges, trials)
+        plt.plot(e, p)
+        save_results(e, p, filename)
+
     plt.xlabel("Number of Edges")
-    plt.ylabel("Probability of Cycle")
+    plt.ylabel(yla)
     plt.savefig("graphs/" + filename + ".png", dpi=300, bbox_inches="tight")
-    save_results(e, p, filename)
     plt.show()
 
 
