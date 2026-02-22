@@ -50,7 +50,7 @@ def connected_experiment(n, max_edges, trials):
     return num_edges, prob
 
 
-#experiment to compare how close each approximation algorithm is to outputting the minimum vertex cover
+#experiment to compare how close each approximation algorithm is to outputting the minimum vertex cover compared to the number of edges
 def approx_experiment1(n, max_edges, trials):
     num_edges = list(range(1, max_edges, 5)) #list of edges from 1 to max_edges, stepping by 5
     approx1_ratios = []
@@ -74,7 +74,7 @@ def approx_experiment1(n, max_edges, trials):
             a2_total += sum(len(approx2(G)) for _ in range(5)) / 5
             a3_total += sum(len(approx3(G)) for _ in range(5)) / 5
 
-        #compute the average ration of the approximation size to the MVC size
+        #compute the average ratio of the approximation size to the MVC size
         approx1_ratios.append(a1_total / mvc_total)
         approx2_ratios.append(a2_total / mvc_total)
         approx3_ratios.append(a3_total / mvc_total)
@@ -82,8 +82,56 @@ def approx_experiment1(n, max_edges, trials):
     return num_edges, approx1_ratios, approx2_ratios, approx3_ratios
 
 
-#plots the graph of an experiment and saves it
-def plot_graph(n, max_edges, trials, filename, func, yla):
+#experiment to compare how close each approximation algorithm is to outputting the minimum vertex cover compared to the number of nodes
+def approx_experiment2(max_nodes, e, trials):
+    num_nodes = list(range(5, max_nodes, 5)) #list of nodes from 1 to max_nodes, stepping by 5
+    approx1_ratios = []
+    approx2_ratios = []
+    approx3_ratios = []
+
+    #loop over each number of nodes to generate random graphs
+    for n in num_nodes:
+        mvc_total = 0
+        a1_total = 0
+        a2_total = 0
+        a3_total = 0
+
+        for _ in range(trials):
+            G = create_random_graph(n, e)
+            mvc_size = len(MVC(G))
+            mvc_total += mvc_size
+
+            #run all three approximation algorithms multiple times and take the average
+            a1_total += sum(len(approx1(G)) for _ in range(5)) / 5
+            a2_total += sum(len(approx2(G)) for _ in range(5)) / 5
+            a3_total += sum(len(approx3(G)) for _ in range(5)) / 5
+
+        #compute the average ratio of the approximation size to the MVC size
+        approx1_ratios.append(a1_total / mvc_total)
+        approx2_ratios.append(a2_total / mvc_total)
+        approx3_ratios.append(a3_total / mvc_total)
+
+    return num_nodes, approx1_ratios, approx2_ratios, approx3_ratios
+
+
+#plots the graph of an experiment versus nodes and saves it
+def plot_node_graph(max_nodes, e, trials, filename):
+    e, p1, p2, p3 = approx_experiment2(max_nodes, e, trials)
+    plt.plot(e, p1, label="approx1")
+    plt.plot(e, p2, label="approx2")
+    plt.plot(e, p3, label="approx3")
+    save_results(e, p1, filename + "_approx1")
+    save_results(e, p2, filename + "_approx2")
+    save_results(e, p3, filename + "_approx3")
+    plt.legend()
+    plt.xlabel("Number of Nodes")
+    plt.ylabel("Average Ratio to MVC")
+    plt.savefig("graphs/" + filename + ".png", dpi=300, bbox_inches="tight")
+    plt.show()
+
+
+#plots the graph of an experiment versus edges and saves it
+def plot_edge_graph(n, max_edges, trials, filename, func, yla):
     if func == approx_experiment1: 
         e, p1, p2, p3 = func(n, max_edges, trials)
         plt.plot(e, p1, label="approx1")
@@ -93,8 +141,6 @@ def plot_graph(n, max_edges, trials, filename, func, yla):
         save_results(e, p2, filename + "_approx2")
         save_results(e, p3, filename + "_approx3")
         plt.legend()
-
-
     else:
         e, p = func(n, max_edges, trials)
         plt.plot(e, p)
